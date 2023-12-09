@@ -2,6 +2,9 @@
 #include <GL/glew.h>
 #include <GLM.hpp>
 #include <string>
+#include <iostream>
+#include <fstream>
+#include <sstream>
 class Shader
 {
 public:
