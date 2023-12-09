@@ -71,8 +71,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>C:\IA_anu2\G3D\folder\stb-master;C:\IA_anu2\G3D\folder\glm-stable\glm;C:\IA_anu2\G3D\folder\glfw-3.3.4.bin.WIN32\include\GLFW;C:\IA_anu2\G3D\folder\glew-2.1.0\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\IA_anu2\G3D\folder\glew-2.1.0\lib\Release\Win32;C:\IA_anu2\G3D\folder\glfw-3.3.4.bin.WIN32\lib-vc2019;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Users\gabi_\Desktop\Flacutate\G3D\OpenGL\stb-master;C:\Users\gabi_\Desktop\Flacutate\G3D\OpenGL\glm-stable\glm;C:\Users\gabi_\Desktop\Flacutate\G3D\OpenGL\glfw-3.3.4.bin.WIN32\include\GLFW;C:\Users\gabi_\Desktop\Flacutate\G3D\OpenGL\glew-2.1.0\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\gabi_\Desktop\Flacutate\G3D\OpenGL\glew-2.1.0\lib\Release\Win32;C:\Users\gabi_\Desktop\Flacutate\G3D\OpenGL\glfw-3.3.4.bin.WIN32\lib-vc2019;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>C:\IA_anu2\G3D\folder\stb-master;C:\IA_anu2\G3D\folder\glm-stable\glm;C:\IA_anu2\G3D\folder\glfw-3.3.4.bin.WIN32\include\GLFW;C:\IA_anu2\G3D\folder\glew-2.1.0\include;$(IncludePath)</IncludePath>
@@ -137,9 +137,11 @@
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="KartingSim.cpp" />
+    <ClCompile Include="Shader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="Shader.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
