@@ -25,9 +25,16 @@ const unsigned int SCR_WIDTH = 1000;
 const unsigned int SCR_HEIGHT = 800;
 
 
-int main()
+int main(int argc, char** argv)
 {
     std::cout << "Hello World!\n";
+    glfwInit();
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "KartingSimulation", NULL, NULL);
+    glfwMakeContextCurrent(window);
+    
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu

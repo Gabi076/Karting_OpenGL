@@ -110,3 +110,37 @@ void Camera::MouseControl(float xPos, float yPos)
     xChange *= mouseSensitivity;
     yChange *= mouseSensitivity;
 }
+
+void Camera::ProcessMouseScroll(float yOffset)
+{
+    if (FoVy >= 1.0f && FoVy <= 90.0f) {
+        FoVy -= yOffset;
+    }
+    if (FoVy <= 1.0f)
+        FoVy = 1.0f;
+    if (FoVy >= 90.0f)
+        FoVy = 90.0f;
+}
+
+void Camera::ProcessMouseMovement(float xOffset, float yOffset, bool constrainPitch)
+{
+    yaw += xOffset;
+    pitch += yOffset;
+    if (constrainPitch) {
+        if (pitch > 89.0f)
+            pitch = 89.0f;
+        if (pitch < -89.0f)
+            pitch = -89.0f;
+    }
+    UpdateCameraVectors();
+}
+
+void Camera::UpdateCameraVectors()
+{
+    this->forward.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+    this->forward.y = sin(glm::radians(pitch));
+    this->forward.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+    this->forward = glm::normalize(this->forward);
+    right = glm::normalize(glm::cross(forward, worldUp));  
+    up = glm::normalize(glm::cross(right, forward));
+}
