@@ -4,6 +4,10 @@ Camera::Camera(const int width, const int height, const glm::vec3& position)
 {
 	startPosition = position;
 	Set(width, height, position);
+}
+
+void Camera::Set(const int width, const int height, const glm::vec3& position)
+{
     this->isPerspective = true;
     this->yaw = YAW;
     this->pitch = PITCH;
@@ -24,18 +28,85 @@ Camera::Camera(const int width, const int height, const glm::vec3& position)
     UpdateCameraVectors();
 }
 
-void Camera::Set(const int width, const int height, const glm::vec3& position)
+void Camera::Reset(const int width, const int height)
 {
     Set(width, height, startPosition);
 }
 
-void Camera::Reset(const int width, const int height)
+void Camera::Reshape(int windowWidth, int windowHeight)
 {
     width = windowWidth;
     height = windowHeight;
     glViewport(0, 0, windowWidth, windowHeight);
 }
 
-void Camera::Reshape(int windowWidth, int windowHeight)
+const glm::vec3 Camera::GetPosition() const
 {
+    return position;
+}
+
+const glm::mat4 Camera::GetViewMatrix() const
+{
+    return glm::lookAt(position, position + forward, up);
+}
+
+const glm::mat4 Camera::GetProjectionMatrix() const
+{
+    glm::mat4 Proj = glm::mat4(1);
+    if (isPerspective) {
+        float aspectRatio = ((float)(width)) / height;
+        Proj = glm::perspective(glm::radians(FoVy), aspectRatio, zNear, zFar);
+    }
+    else {
+        float scaleFactor = 2000.f;
+        Proj = glm::ortho<float>(
+            -width / scaleFactor, width / scaleFactor,
+            -height / scaleFactor, height / scaleFactor, -zFar, zFar);
+    }
+    return Proj;
+}
+
+void Camera::ProcessKeyboard(ECameraMovementType direction, float deltaTime)
+{
+    float velocity = (float)(cameraSpeedFactor * deltaTime);
+    switch (direction) {
+    case ECameraMovementType::FORWARD:
+        position += forward * velocity;
+        break;
+    case ECameraMovementType::BACKWARD:
+        position -= forward * velocity;
+        break;
+    case ECameraMovementType::LEFT:
+        position -= right * velocity;
+        break;
+    case ECameraMovementType::RIGHT:
+        position += right * velocity;
+        break;
+    case ECameraMovementType::UP:
+        position += up * velocity;
+        break;
+    case ECameraMovementType::DOWN:
+        position -= up * velocity;
+        break;
+    }
+}
+
+void Camera::MouseControl(float xPos, float yPos)
+{
+    if (bFirstMouseMove) {
+        lastX = xPos;
+        lastY = yPos;
+        bFirstMouseMove = false;
+    }
+
+    float xChange = xPos - lastX;
+    float yChange = lastY - yPos;
+    lastX = xPos;
+    lastY = yPos;
+
+    if (fabs(xChange) <= 1e-6 && fabs(yChange) <= 1e-6) {
+        return;
+    }
+    xChange *= mouseSensitivity;
+    yChange *= mouseSensitivity;
 }
