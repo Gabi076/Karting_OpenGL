@@ -63,12 +63,36 @@ unsigned int CreateTexture(const std::string& strTexturePath)
 
 int main(int argc, char** argv)
 {
-    std::cout << "Hello World!\n";
+    std::string strFullExeFileName = argv[0];
+    std::string strExePath;
+    const size_t last_slash_idx = strFullExeFileName.rfind('\\');
+    if (std::string::npos != last_slash_idx) {
+        strExePath = strFullExeFileName.substr(0, last_slash_idx);
+    }
+
+    // glfw: initialize and configure
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "KartingSimulation", NULL, NULL);
+
+    // glfw window creation
+    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Karting Simulator", NULL, NULL);
+    if (window == NULL) {
+        std::cout << "Failed to create GLFW window" << std::endl;
+        glfwTerminate();
+        return -1;
+    }
+
     glfwMakeContextCurrent(window);
+
+    // tell GLFW to capture our mouse
+    //glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+    glewInit();
+
+    // Create camera
+    Camera *pCamera = new Camera(SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0, 1.0, 3.0));
+
 
 }
