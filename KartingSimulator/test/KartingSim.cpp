@@ -25,6 +25,11 @@
 const unsigned int SCR_WIDTH = 1000;
 const unsigned int SCR_HEIGHT = 800;
 
+Camera* pCamera = nullptr;
+
+double deltaTime = 0.0f;	// time between current frame and last frame
+double lastFrame = 0.0f;
+
 unsigned int CreateTexture(const std::string& strTexturePath)
 {
     unsigned int textureId = -1;
@@ -106,6 +111,36 @@ void renderFloor()
     glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
+// process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
+void processInput(GLFWwindow* window)
+{
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+        glfwSetWindowShouldClose(window, true);
+
+    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+        pCamera->ProcessKeyboard(FORWARD, (float)deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+        pCamera->ProcessKeyboard(BACKWARD, (float)deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
+        pCamera->ProcessKeyboard(LEFT, (float)deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
+        pCamera->ProcessKeyboard(RIGHT, (float)deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_PAGE_UP) == GLFW_PRESS)
+        pCamera->ProcessKeyboard(UP, (float)deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_PAGE_DOWN) == GLFW_PRESS)
+        pCamera->ProcessKeyboard(DOWN, (float)deltaTime);
+
+    if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS) {
+        int width, height;
+        glfwGetWindowSize(window, &width, &height);
+        pCamera->Reset(width, height);
+
+    }
+}
+
+// glfw: whenever the window size changed (by OS or user resize) this callback function executes
+
+
 
 int main(int argc, char** argv)
 {
@@ -138,7 +173,7 @@ int main(int argc, char** argv)
     glewInit();
 
     // Create camera
-    Camera *pCamera = new Camera(SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0, 1.0, 3.0));
+    pCamera = new Camera(SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0, 1.0, 3.0));
 
 
 }
