@@ -220,7 +220,7 @@ int main(int argc, char** argv)
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
 
-    unsigned int floorTexture = CreateTexture(strExePath + "\\PrejmerTrack.png");
+    unsigned int floorTexture = CreateTexture(strExePath + "\\..\\test\\PrejmerTrack.png");
 
     // Create camera
     pCamera = new Camera(SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0, 1.0, 3.0));
