@@ -109,6 +109,8 @@ void Camera::MouseControl(float xPos, float yPos)
     }
     xChange *= mouseSensitivity;
     yChange *= mouseSensitivity;
+
+    ProcessMouseMovement(xChange, yChange);
 }
 
 void Camera::ProcessMouseScroll(float yOffset)

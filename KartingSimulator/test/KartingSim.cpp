@@ -27,6 +27,11 @@ const unsigned int SCR_HEIGHT = 800;
 
 Camera* pCamera = nullptr;
 
+void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+void mouse_callback(GLFWwindow* window, double xpos, double ypos);
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
+void processInput(GLFWwindow* window);
+
 double deltaTime = 0.0f;	// time between current frame and last frame
 double lastFrame = 0.0f;
 
@@ -110,7 +115,6 @@ void renderScene(const Shader& shader)
 }
 
 
-
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
 void processInput(GLFWwindow* window)
 {
@@ -190,10 +194,32 @@ int main(int argc, char** argv)
     glewInit();
 
     glEnable(GL_DEPTH_TEST);
+
+    // Floor vertices
+    float floorVertices[] = {
+        // positions          // texture Coords 
+        5.0f, -0.5f,  5.0f,  1.0f, 0.0f,
+        -5.0f, -0.5f,  5.0f,  0.0f, 0.0f,
+        -5.0f, -0.5f, -5.0f,  0.0f, 1.0f,
+
+        5.0f, -0.5f,  5.0f,  1.0f, 0.0f,
+        -5.0f, -0.5f, -5.0f,  0.0f, 1.0f,
+        5.0f, -0.5f, -5.0f,  1.0f, 1.0f
+    };
+
     // Floor VAO si VBO
     unsigned int floorVAO, floorVBO;
+    glGenVertexArrays(1, &floorVAO);
+    glGenBuffers(1, &floorVBO);
+    glBindVertexArray(floorVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, floorVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(floorVertices), &floorVertices, GL_STATIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
 
-    unsigned int floorTexture = CreateTexture(strExePath + "\\ColoredFloor.png");
+    unsigned int floorTexture = CreateTexture(strExePath + "\\PrejmerTrack.png");
 
     // Create camera
     pCamera = new Camera(SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0, 1.0, 3.0));
@@ -209,6 +235,24 @@ int main(int argc, char** argv)
         processInput(window);
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        glm::mat4 model = glm::mat4(1.0);
+
+        shaderFloor.Use();
+        glm::mat4 projection = pCamera->GetProjectionMatrix();
+        glm::mat4 view = pCamera->GetViewMatrix();
+        shaderFloor.SetMat4("projection", projection);
+        shaderFloor.SetMat4("view", view);
+
+        // Draw floor
+        glBindVertexArray(floorVAO);
+        glBindTexture(GL_TEXTURE_2D, floorTexture);
+        model = glm::mat4();
+        shaderFloor.SetMat4("model", model);
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+
+        glfwSwapBuffers(window);
+        glfwPollEvents();
     }
     Cleanup();
 
