@@ -66,15 +66,6 @@ unsigned int CreateTexture(const std::string& strTexturePath)
 
     return textureId;
 }
-
-void renderScene(const Shader& shader)
-{
-    // floor
-    glm::mat4 model;
-    shader.SetMat4("model", model);
-    renderFloor();
-}
-
 unsigned int planeVAO = 0;
 void renderFloor()
 {
@@ -110,6 +101,15 @@ void renderFloor()
     glBindVertexArray(planeVAO);
     glDrawArrays(GL_TRIANGLES, 0, 6);
 }
+void renderScene(const Shader& shader)
+{
+    // floor
+    glm::mat4 model;
+    shader.SetMat4("model", model);
+    renderFloor();
+}
+
+
 
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
 void processInput(GLFWwindow* window)
@@ -137,9 +137,26 @@ void processInput(GLFWwindow* window)
 
     }
 }
+void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+{
+    pCamera->Reshape(width, height);
+}
+
+void mouse_callback(GLFWwindow* window, double xpos, double ypos)
+{
+    pCamera->MouseControl((float)xpos, (float)ypos);
+}
+
+void scroll_callback(GLFWwindow* window, double xoffset, double yOffset)
+{
+    pCamera->ProcessMouseScroll((float)yOffset);
+}
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
-
+void Cleanup()
+{
+    delete pCamera;
+}
 
 
 int main(int argc, char** argv)
@@ -166,14 +183,20 @@ int main(int argc, char** argv)
     }
 
     glfwMakeContextCurrent(window);
-
-    // tell GLFW to capture our mouse
-    //glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+    glfwSetCursorPosCallback(window, mouse_callback);
+    glfwSetScrollCallback(window, scroll_callback);
 
     glewInit();
 
+    glEnable(GL_DEPTH_TEST);
     // Create camera
     pCamera = new Camera(SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0, 1.0, 3.0));
 
+    unsigned int floorTexture = CreateTexture(strExePath + "\\ColoredFloor.png");
 
+    Cleanup();
+
+    glfwTerminate();
+    return 0;
 }
