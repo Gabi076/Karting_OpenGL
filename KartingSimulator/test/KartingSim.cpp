@@ -190,11 +190,13 @@ int main(int argc, char** argv)
     glewInit();
 
     glEnable(GL_DEPTH_TEST);
-    // Create camera
-    pCamera = new Camera(SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0, 1.0, 3.0));
 
     unsigned int floorTexture = CreateTexture(strExePath + "\\ColoredFloor.png");
 
+    // Create camera
+    pCamera = new Camera(SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0, 1.0, 3.0));
+
+    Shader shaderFloor("Floor.vs", "Floor.fs");
     Cleanup();
 
     glfwTerminate();
