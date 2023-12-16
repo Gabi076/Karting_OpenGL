@@ -190,6 +190,8 @@ int main(int argc, char** argv)
     glewInit();
 
     glEnable(GL_DEPTH_TEST);
+    // Floor VAO si VBO
+    unsigned int floorVAO, floorVBO;
 
     unsigned int floorTexture = CreateTexture(strExePath + "\\ColoredFloor.png");
 
@@ -197,6 +199,17 @@ int main(int argc, char** argv)
     pCamera = new Camera(SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0, 1.0, 3.0));
 
     Shader shaderFloor("Floor.vs", "Floor.fs");
+    while (!glfwWindowShouldClose(window)) {
+        // per-frame time logic
+        double currentFrame = glfwGetTime();
+        deltaTime = currentFrame - lastFrame;
+        lastFrame = currentFrame;
+
+        // input
+        processInput(window);
+
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    }
     Cleanup();
 
     glfwTerminate();
