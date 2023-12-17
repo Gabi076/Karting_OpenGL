@@ -112,6 +112,14 @@ void renderFloor()
     glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
+void processNode(aiNode* node, const aiScene* scene) {
+    // Process node meshes, materials, etc.
+    // Recursively process child nodes
+    for (unsigned int i = 0; i < node->mNumChildren; ++i) {
+        processNode(node->mChildren[i], scene);
+    }
+}
+
 void loadModel(const std::string& filePath) {
     Assimp::Importer importer;
     const aiScene* scene = importer.ReadFile(filePath, aiProcess_Triangulate | aiProcess_FlipUVs);
