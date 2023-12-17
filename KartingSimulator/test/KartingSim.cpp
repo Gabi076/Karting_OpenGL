@@ -112,6 +112,20 @@ void renderFloor()
     glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
+void loadModel(const std::string& filePath) {
+    Assimp::Importer importer;
+    const aiScene* scene = importer.ReadFile(filePath, aiProcess_Triangulate | aiProcess_FlipUVs);
+
+    if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
+        // Handle error
+        std::cerr << "Error loading model: " << importer.GetErrorString() << std::endl;
+        return;
+    }
+
+    // Process the imported model data
+    processNode(scene->mRootNode, scene);
+}
+
 
 void renderScene(const Shader& shader)
 {
