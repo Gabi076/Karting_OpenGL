@@ -19,6 +19,10 @@
 #define STB_IMAGE_IMPLEMENTATION 
 #include"IncludeDir/stb-master/stb_image.h"
 
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
+
 #pragma comment (lib, "LibrariesDir/lib-vc2019/glfw3dll.lib")
 #pragma comment (lib, "LibrariesDir/Win32/glew32.lib")
 #pragma comment (lib, "LibrariesDir/lib/x64/assimp-vc143-mt.lib")
@@ -107,6 +111,8 @@ void renderFloor()
     glBindVertexArray(planeVAO);
     glDrawArrays(GL_TRIANGLES, 0, 6);
 }
+
+
 void renderScene(const Shader& shader)
 {
     // floor
@@ -166,6 +172,7 @@ void Cleanup()
 
 int main(int argc, char** argv)
 {
+
     std::string strFullExeFileName = argv[0];
     std::string strExePath;
     const size_t last_slash_idx = strFullExeFileName.rfind('\\');
@@ -221,6 +228,8 @@ int main(int argc, char** argv)
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
 
     unsigned int floorTexture = CreateTexture(strExePath + "\\..\\test\\PrejmerTrack.png");
+
+    loadModel("KartObject/kart.obj");
 
     // Create camera
     pCamera = new Camera(SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0, 1.0, 3.0));

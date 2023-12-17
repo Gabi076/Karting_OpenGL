@@ -1,4 +1,4 @@
-#pragma once
+ #pragma once
 #include "IncludeDir/include/GL/glew.h"
 #include "IncludeDir/glm/glm.hpp"
 #include <string>
