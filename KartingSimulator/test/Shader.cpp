@@ -45,6 +45,21 @@ void Shader::SetMat4(const std::string& name, const glm::mat4& mat) const
     glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, &mat[0][0]);
 }
 
+void Shader::SetKa(const std::string& name, const float& Ka) const
+{
+    glUniform1f(glGetUniformLocation(ID, name.c_str()), Ka);
+}
+void Shader::SetKd(const std::string& name, const float& Kd) const {
+    glUniform1f(glGetUniformLocation(ID, name.c_str()), Kd);
+}
+void Shader::SetKs(const std::string& name, const float& Ks) const {
+    glUniform1f(glGetUniformLocation(ID, name.c_str()), Ks);
+}
+
+void Shader::SetExponent(const std::string& name, const float& exponent) const {
+    glUniform1f(glGetUniformLocation(ID, name.c_str()), exponent);
+}
+
 void Shader::Init(const char* vertexPath, const char* fragmentPath)
 {
     std::string vertexCode;
