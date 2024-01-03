@@ -44,5 +44,11 @@
     <None Include="PhongLight.vs" />
     <None Include="Lamp.fs" />
     <None Include="Lamp.vs" />
+    <None Include="Blending.vs">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="Blending.fs">
+      <Filter>Source Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

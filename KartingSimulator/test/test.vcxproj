@@ -149,6 +149,8 @@
     <ClInclude Include="Shader.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Blending.fs" />
+    <None Include="Blending.vs" />
     <None Include="Floor.fs" />
     <None Include="Floor.vs" />
     <None Include="Lamp.fs" />

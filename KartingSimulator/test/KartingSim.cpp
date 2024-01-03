@@ -214,7 +214,7 @@ int main(int argc, char** argv)
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 	// glfw window creation
-	GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Lab 7", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "KArtingSimulator", NULL, NULL);
 	if (window == NULL) {
 		std::cout << "Failed to create GLFW window" << std::endl;
 		glfwTerminate();
@@ -222,9 +222,9 @@ int main(int argc, char** argv)
 	}
 
 	glfwMakeContextCurrent(window);
-	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-	glfwSetCursorPosCallback(window, mouse_callback);
-	glfwSetScrollCallback(window, scroll_callback);
+	//glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+	//glfwSetCursorPosCallback(window, mouse_callback);
+	//glfwSetScrollCallback(window, scroll_callback);
 
 	// tell GLFW to capture our mouse
 	//glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -336,14 +336,14 @@ int main(int argc, char** argv)
 	unsigned int floorTexture = CreateTexture(strExePath + "\\..\\test\\PrejmerTrack.png");
 
 	// Create camera
-	pCamera = new Camera(SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0, 0.0, 3.0));
+	pCamera = new Camera(SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0, 0.0, 0.0));
 
 	glm::vec3 lightPos(0.0f, 2.0f, 2.0f);
 
 	Shader lightingShader("PhongLight.vs", "PhongLight.fs");
 	Shader lampShader("Lamp.vs", "Lamp.fs");
 	Shader shaderFloor("Floor.vs", "Floor.fs");
-
+	Shader shaderBlending("Blending.vs", "Blending.fs");
 	// render loop
 	while (!glfwWindowShouldClose(window)) {
 		// per-frame time logic
@@ -385,16 +385,18 @@ int main(int argc, char** argv)
 		glBindVertexArray(lightVAO);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 
+		glm::mat4 model1 = glm::mat4(1.0);
+
 		shaderFloor.Use();
 		glm::mat4 projection = pCamera->GetProjectionMatrix();
 		glm::mat4 view = pCamera->GetViewMatrix();
 		shaderFloor.SetMat4("projection", projection);
 		shaderFloor.SetMat4("view", view);
-		glm::mat4 model1;
+
 		// Draw floor
 		glBindVertexArray(floorVAO);
 		glBindTexture(GL_TEXTURE_2D, floorTexture);
-		model1 = glm::mat4();
+		model = glm::mat4();
 		shaderFloor.SetMat4("model", model1);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 
