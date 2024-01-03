@@ -241,6 +241,8 @@ int main(int argc, char** argv)
 
     // Floor VAO si VBO
     unsigned int floorVAO, floorVBO;
+    unsigned int VBO;
+    glGenBuffers(1, &VBO);
     glGenVertexArrays(1, &floorVAO);
     glGenBuffers(1, &floorVBO);
     glBindVertexArray(floorVAO);
@@ -263,6 +265,14 @@ int main(int argc, char** argv)
     Shader lampShader("Lamp.vs", "Lamp.fs");
 
     Shader shaderFloor("Floor.vs", "Floor.fs");
+    unsigned int lightVAO;
+    glGenVertexArrays(1, &lightVAO);
+    glBindVertexArray(lightVAO);
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    // note that we update the lamp's position attribute's stride to reflect the updated buffer data
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
     while (!glfwWindowShouldClose(window)) {
         // per-frame time logic
         double currentFrame = glfwGetTime();
@@ -273,7 +283,18 @@ int main(int argc, char** argv)
         processInput(window);
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+        shaderFloor.Use();
+        glm::mat4 projection = pCamera->GetProjectionMatrix();
+        glm::mat4 view = pCamera->GetViewMatrix();
+        shaderFloor.SetMat4("projection", projection);
+        shaderFloor.SetMat4("view", view);
+        glm::mat4 model1;
+        // Draw floor
+        glBindVertexArray(floorVAO);
+        glBindTexture(GL_TEXTURE_2D, floorTexture);
+        model1 = glm::mat4();
+        shaderFloor.SetMat4("model", model1);
+        glDrawArrays(GL_TRIANGLES, 0, 6);
         lightingShader.Use();
         lightingShader.SetVec3("objectColor", 0.5f, 1.0f, 0.31f);
         lightingShader.SetVec3("lightColor", 1.0f, 1.0f, 1.0f);
@@ -294,18 +315,10 @@ int main(int argc, char** argv)
         model = glm::scale(model, glm::vec3(0.05f)); // a smaller cube
         lampShader.SetMat4("model", model); 
 
-        shaderFloor.Use();
-        glm::mat4 projection = pCamera->GetProjectionMatrix();
-        glm::mat4 view = pCamera->GetViewMatrix();
-        shaderFloor.SetMat4("projection", projection);
-        shaderFloor.SetMat4("view", view);
-
-        // Draw floor
-        glBindVertexArray(floorVAO);
-        glBindTexture(GL_TEXTURE_2D, floorTexture);
-        model = glm::mat4();
-        shaderFloor.SetMat4("model", model);
-        glDrawArrays(GL_TRIANGLES, 0, 6);
+        glBindVertexArray(lightVAO);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+        
+       
 
         glfwSwapBuffers(window);
         glfwPollEvents();
