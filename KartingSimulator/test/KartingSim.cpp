@@ -274,7 +274,6 @@ int main(int argc, char** argv)
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        glm::mat4 model = glm::mat4(1.0);
         lightingShader.Use();
         lightingShader.SetVec3("objectColor", 0.5f, 1.0f, 0.31f);
         lightingShader.SetVec3("lightColor", 1.0f, 1.0f, 1.0f);
@@ -286,6 +285,15 @@ int main(int argc, char** argv)
         lightingShader.SetFloat("n", n);
         lightingShader.SetMat4("projection", pCamera->GetProjectionMatrix());
         lightingShader.SetMat4("view", pCamera->GetViewMatrix());
+        glm::mat4 model = glm::scale(glm::mat4(1.0), glm::vec3(3.0f));
+        lightingShader.SetMat4("model", model);
+        lampShader.Use();
+        lampShader.SetMat4("projection", pCamera->GetProjectionMatrix());
+        lampShader.SetMat4("view", pCamera->GetViewMatrix());
+        model = glm::translate(glm::mat4(1.0), lightPos);
+        model = glm::scale(model, glm::vec3(0.05f)); // a smaller cube
+        lampShader.SetMat4("model", model); 
+
         shaderFloor.Use();
         glm::mat4 projection = pCamera->GetProjectionMatrix();
         glm::mat4 view = pCamera->GetViewMatrix();
