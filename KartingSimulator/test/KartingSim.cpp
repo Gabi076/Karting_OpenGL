@@ -112,7 +112,7 @@ void renderFloor()
     glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
-void processNode(aiNode* node, const aiScene* scene) {
+/*void processNode(aiNode* node, const aiScene* scene) {
     // Process node meshes, materials, etc.
     // Recursively process child nodes
     for (unsigned int i = 0; i < node->mNumChildren; ++i) {
@@ -132,7 +132,7 @@ void loadModel(const std::string& filePath) {
 
     // Process the imported model data
     processNode(scene->mRootNode, scene);
-}
+}*/
 
 
 void renderScene(const Shader& shader)
@@ -251,7 +251,7 @@ int main(int argc, char** argv)
 
     unsigned int floorTexture = CreateTexture(strExePath + "\\..\\test\\PrejmerTrack.png");
 
-    loadModel("KartObject/kart.obj");
+    //loadModel("KartObject/kart.obj");
 
     // Create camera
     pCamera = new Camera(SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0, 1.0, 3.0));
