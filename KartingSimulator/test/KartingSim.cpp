@@ -190,8 +190,10 @@ void Cleanup()
 {
     delete pCamera;
 }
-
-
+float Ka = 0.1;
+float Kd = 0.5;
+float Ks = 0.1;
+float n = 1;
 int main(int argc, char** argv)
 {
 
@@ -256,6 +258,10 @@ int main(int argc, char** argv)
     // Create camera
     pCamera = new Camera(SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0, 1.0, 3.0));
 
+    glm::vec3 lightPos(0.0f, 0.0f, 2.0f);
+    Shader lightingShader("PhongLight.vs", "PhongLight.fs");
+    Shader lampShader("Lamp.vs", "Lamp.fs");
+
     Shader shaderFloor("Floor.vs", "Floor.fs");
     while (!glfwWindowShouldClose(window)) {
         // per-frame time logic
@@ -269,7 +275,17 @@ int main(int argc, char** argv)
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         glm::mat4 model = glm::mat4(1.0);
-
+        lightingShader.Use();
+        lightingShader.SetVec3("objectColor", 0.5f, 1.0f, 0.31f);
+        lightingShader.SetVec3("lightColor", 1.0f, 1.0f, 1.0f);
+        lightingShader.SetVec3("lightPos", lightPos);
+        lightingShader.SetVec3("viewPos", pCamera->GetPosition());
+        lightingShader.SetFloat("Ka", Ka);
+        lightingShader.SetFloat("Kd", Kd);
+        lightingShader.SetFloat("Ks", Ks);
+        lightingShader.SetFloat("n", n);
+        lightingShader.SetMat4("projection", pCamera->GetProjectionMatrix());
+        lightingShader.SetMat4("view", pCamera->GetViewMatrix());
         shaderFloor.Use();
         glm::mat4 projection = pCamera->GetProjectionMatrix();
         glm::mat4 view = pCamera->GetViewMatrix();
