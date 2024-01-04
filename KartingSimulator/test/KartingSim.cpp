@@ -213,7 +213,7 @@ int main(int argc, char** argv)
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 	// glfw window creation
-	GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "KArtingSimulator", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "KartingSimulator", NULL, NULL);
 	if (window == NULL) {
 		std::cout << "Failed to create GLFW window" << std::endl;
 		glfwTerminate();
@@ -221,12 +221,12 @@ int main(int argc, char** argv)
 	}
 
 	glfwMakeContextCurrent(window);
-	//glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-	//glfwSetCursorPosCallback(window, mouse_callback);
-	//glfwSetScrollCallback(window, scroll_callback);
+	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+	glfwSetCursorPosCallback(window, mouse_callback);
+	glfwSetScrollCallback(window, scroll_callback);
 
 	// tell GLFW to capture our mouse
-	//glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	glewInit();
 
@@ -371,7 +371,9 @@ int main(int argc, char** argv)
 		//lightingShader.setMat4("model", model);
 		//objModel.Draw(lightingShader);
 
-		glm::mat4 piratModel = glm::scale(glm::mat4(1.0), glm::vec3(0.005f));
+		glm::mat4 piratModel = glm::scale(glm::mat4(1.0), glm::vec3(0.00046f));
+		piratModel = glm::translate(piratModel, glm::vec3(-1970.0f, -1085.0f, -1450.0f));
+		piratModel = glm::rotate(piratModel, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 		lightingShader.SetMat4("model", piratModel);
 		piratObjModel.Draw(lightingShader);
 

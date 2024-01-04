@@ -70,22 +70,22 @@ const glm::mat4 Camera::GetProjectionMatrix() const
 void Camera::ProcessKeyboard(ECameraMovementType direction, float deltaTime)
 {
     float velocity = (float)(cameraSpeedFactor *0.9*deltaTime);
-    glm::vec3 horizontalForward = glm::normalize(glm::vec3(forward.x, 0.0f, forward.z));
-    float rotationAngle = 0.0f;
+    /*glm::vec3 horizontalForward = glm::normalize(glm::vec3(forward.x, 0.0f, forward.z));
+    float rotationAngle = 0.0f;*/
     switch (direction) {
     case ECameraMovementType::FORWARD:
-        position += horizontalForward * velocity;
+        position += forward * velocity;
         break;
     case ECameraMovementType::BACKWARD:
-        position -= horizontalForward * velocity;
+        position -= forward * velocity;
         break;
     case ECameraMovementType::LEFT:
         position -= right * velocity;
-        rotationAngle = glm::radians(-90.0f);
+        //rotationAngle = glm::radians(-90.0f);
         break;
     case ECameraMovementType::RIGHT:
         position += right * velocity;
-        rotationAngle = glm::radians(90.0f);
+       // rotationAngle = glm::radians(90.0f);
         break;
     case ECameraMovementType::UP:
         position += up * velocity;
@@ -94,10 +94,10 @@ void Camera::ProcessKeyboard(ECameraMovementType direction, float deltaTime)
         position -= up * velocity;
         break;
     }
-    if (rotationAngle != 0.0f) {
+    /*if (rotationAngle != 0.0f) {
         yaw += 0.1*rotationAngle;
         UpdateCameraVectors();
-    }
+    }*/
 }
 
 void Camera::MouseControl(float xPos, float yPos)
