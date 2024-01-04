@@ -73,7 +73,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <IncludePath>..\IncludeDir\GLFW;..\IncludeDir\glm;..\IncludeDir\include;..\IncludeDir\stb-master;..\IncludeDir\assimp_include\assimp;$(IncludePath)</IncludePath>
     <LibraryPath>..\LibrariesDir\lib-vc2019;..\LibrariesDir\Win32;..\LibrariesDir\lib\x64;$(LibraryPath)</LibraryPath>
-    <ExternalIncludePath>IncludeDir\assimp_include;$(ExternalIncludePath)</ExternalIncludePath>
+    <ExternalIncludePath>IncludeDir\assimp_include;C:\Repositories\G3D\Karting_OpenGL\Karting_OpenGL\KartingSimulator\test\IncludeDir\glm;$(ExternalIncludePath)</ExternalIncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IncludePath>..\IncludeDir\GLFW;..\IncludeDir\glm;..\IncludeDir\include;..\IncludeDir\stb-master;$(IncludePath)</IncludePath>
@@ -142,10 +142,12 @@
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="KartingSim.cpp" />
+    <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Shader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="Mesh.h" />
     <ClInclude Include="Shader.h" />
   </ItemGroup>
   <ItemGroup>
