@@ -39,6 +39,10 @@ void processInput(GLFWwindow* window);
 double deltaTime = 0.0f;	// time between current frame and last frame
 double lastFrame = 0.0f;
 
+GLfloat x = -1970.0f;
+GLfloat y = -1085.0f;
+GLfloat z = -1450.0f;
+
 unsigned int CreateTexture(const std::string& strTexturePath)
 {
     unsigned int textureId = -1;
@@ -162,6 +166,10 @@ void processInput(GLFWwindow* window)
     if (glfwGetKey(window, GLFW_KEY_PAGE_DOWN) == GLFW_PRESS)
         pCamera->ProcessKeyboard(DOWN, (float)deltaTime);
 
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+		x += 5.f;
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+		x -= 5.f;
     if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS) {
         int width, height;
         glfwGetWindowSize(window, &width, &height);
@@ -372,7 +380,8 @@ int main(int argc, char** argv)
 		//objModel.Draw(lightingShader);
 
 		glm::mat4 piratModel = glm::scale(glm::mat4(1.0), glm::vec3(0.00046f));
-		piratModel = glm::translate(piratModel, glm::vec3(-1970.0f, -1085.0f, -1450.0f));
+
+		piratModel = glm::translate(piratModel, glm::vec3(x, y, z));
 		piratModel = glm::rotate(piratModel, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 		lightingShader.SetMat4("model", piratModel);
 		piratObjModel.Draw(lightingShader);
