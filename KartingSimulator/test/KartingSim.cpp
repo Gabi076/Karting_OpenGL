@@ -39,9 +39,13 @@ void processInput(GLFWwindow* window);
 double deltaTime = 0.0f;	// time between current frame and last frame
 double lastFrame = 0.0f;
 
-GLfloat x = -1970.0f;
-GLfloat y = -1085.0f;
-GLfloat z = -1450.0f;
+float x = -1970.0f;
+float y = -1085.0f;
+float z = -1450.0f;
+
+glm::vec3 kartPos = glm::vec3 (x,y,z);
+float deltaX= 0.0f, deltaZ=0.0f;
+glm::mat4 kartModel;
 
 unsigned int CreateTexture(const std::string& strTexturePath)
 {
@@ -146,10 +150,20 @@ void renderScene(const Shader& shader)
     renderFloor();
 }
 
+// Accumulated rotation angle
+float accumulatedRotation = 0.0f;
+
+// Rotation speed
+float rotationSpeed = 5.f;
+
+glm::mat4 rotationMatrix;
 
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
 void processInput(GLFWwindow* window)
 {
+	glm::mat4 rotationMatrix;
+	deltaX = 2000.0f * (float)cos(glm::radians(accumulatedRotation)) * (float)deltaTime;
+	deltaZ = 3000.0f * (float)sin(glm::radians(accumulatedRotation)) * (float)deltaTime;
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
 
@@ -166,16 +180,40 @@ void processInput(GLFWwindow* window)
     if (glfwGetKey(window, GLFW_KEY_PAGE_DOWN) == GLFW_PRESS)
         pCamera->ProcessKeyboard(DOWN, (float)deltaTime);
 
-	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-		x += 5.f;
-	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-		x -= 5.f;
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+		kartPos.x += deltaX;
+		kartPos.z -= deltaZ;
+		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+			accumulatedRotation += 1;
+			//kartModel *= rotationMatrix;
+		}
+		else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+			accumulatedRotation -= 1;
+			//kartModel *= rotationMatrix;
+		}
+		
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+		kartPos.x -= deltaX;
+		kartPos.z += deltaZ;
+		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+			accumulatedRotation -= 1.3;
+		    kartModel = glm::rotate(glm::mat4(1.0f), glm::radians(5.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+			
+		}
+		else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+			accumulatedRotation += 1.3;
+			kartModel = glm::rotate(glm::mat4(1.0f), glm::radians(5.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		}
+	}
     if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS) {
         int width, height;
         glfwGetWindowSize(window, &width, &height);
         pCamera->Reset(width, height);
-
     }
+		
+	
 }
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
@@ -346,23 +384,20 @@ int main(int argc, char** argv)
 	pCamera = new Camera(SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0, 0.0, 0.0));
 
 	glm::vec3 lightPos(0.0f, 2.0f, 2.0f);
-
 	Shader lightingShader("PhongLight.vs", "PhongLight.fs");
 	Shader lampShader("Lamp.vs", "Lamp.fs");
 	Shader shaderFloor("Floor.vs", "Floor.fs");
 	Shader shaderBlending("Blending.vs", "Blending.fs");
-	std::string piratObjFileName = (strExePath + "\\..\\test\\Models\\Kart\\Kart.obj");
-	Model piratObjModel(piratObjFileName, false);
+	std::string kartObjFileName = (strExePath + "\\..\\test\\Models\\Kart\\Kart.obj");
+	Model kartObjModel(kartObjFileName, false);
 	// render loop
 	while (!glfwWindowShouldClose(window)) {
 		// per-frame time logic
 		double currentFrame = glfwGetTime();
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
-
 		// input
 		processInput(window);
-
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		lightingShader.Use();
@@ -379,13 +414,11 @@ int main(int argc, char** argv)
 		//lightingShader.setMat4("model", model);
 		//objModel.Draw(lightingShader);
 
-		glm::mat4 piratModel = glm::scale(glm::mat4(1.0), glm::vec3(0.00046f));
-
-		piratModel = glm::translate(piratModel, glm::vec3(x, y, z));
-		piratModel = glm::rotate(piratModel, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-		lightingShader.SetMat4("model", piratModel);
-		piratObjModel.Draw(lightingShader);
-
+		kartModel = glm::scale(glm::mat4(1.0), glm::vec3(0.00046f));
+		kartModel = glm::translate(kartModel, kartPos) ;
+		kartModel = glm::rotate(kartModel, glm::radians(90.f) + glm::radians(accumulatedRotation), glm::vec3(0.0f, 1.0f, 0.0f));
+		lightingShader.SetMat4("model", kartModel);
+		kartObjModel.Draw(lightingShader);
 		// also draw the lamp object
 		lampShader.Use();
 		lampShader.SetMat4("projection", pCamera->GetProjectionMatrix());
