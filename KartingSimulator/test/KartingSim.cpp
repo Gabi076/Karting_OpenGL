@@ -17,7 +17,7 @@
 #include "Camera.h"
 #include "Shader.h"
 #include"IncludeDir/stb-master/stb_image.h"
-
+#include"Model.h"
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
@@ -343,6 +343,8 @@ int main(int argc, char** argv)
 	Shader lampShader("Lamp.vs", "Lamp.fs");
 	Shader shaderFloor("Floor.vs", "Floor.fs");
 	Shader shaderBlending("Blending.vs", "Blending.fs");
+	std::string piratObjFileName = (strExePath + "\\..\\test\\Models\\Kart\\Kart.obj");
+	Model piratObjModel(piratObjFileName, false);
 	// render loop
 	while (!glfwWindowShouldClose(window)) {
 		// per-frame time logic
@@ -361,25 +363,25 @@ int main(int argc, char** argv)
 		lightingShader.SetVec3("lightPos", lightPos);
 		lightingShader.SetVec3("viewPos", pCamera->GetPosition());
 
-		lightingShader.SetKa("Ka", Ka);
-		lightingShader.SetKd("Kd", Kd);
-		lightingShader.SetKs("Ks", Ks);
-		lightingShader.SetExponent("exponent", exponent);
-
 		lightingShader.SetMat4("projection", pCamera->GetProjectionMatrix());
 		lightingShader.SetMat4("view", pCamera->GetViewMatrix());
 
+		// render the model
+		//glm::mat4 model = glm::scale(glm::mat4(1.0), glm::vec3(0.001f));
+		//lightingShader.setMat4("model", model);
+		//objModel.Draw(lightingShader);
 
-		glm::mat4 model = glm::scale(glm::mat4(1.0), glm::vec3(3.0f));
-		lightingShader.SetMat4("model", model);
+		glm::mat4 piratModel = glm::scale(glm::mat4(1.0), glm::vec3(0.005f));
+		lightingShader.SetMat4("model", piratModel);
+		piratObjModel.Draw(lightingShader);
 
-		// draw the lamp object
+		// also draw the lamp object
 		lampShader.Use();
 		lampShader.SetMat4("projection", pCamera->GetProjectionMatrix());
 		lampShader.SetMat4("view", pCamera->GetViewMatrix());
-		model = glm::translate(glm::mat4(1.0), lightPos);
-		model = glm::scale(model, glm::vec3(0.3f)); // a smaller cube
-		lampShader.SetMat4("model", model);
+		glm::mat4 lightModel = glm::translate(glm::mat4(1.0), lightPos);
+		lightModel = glm::scale(lightModel, glm::vec3(0.05f)); // a smaller cube
+		lampShader.SetMat4("model", lightModel);
 
 		glBindVertexArray(lightVAO);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
@@ -395,7 +397,7 @@ int main(int argc, char** argv)
 		// Draw floor
 		glBindVertexArray(floorVAO);
 		glBindTexture(GL_TEXTURE_2D, floorTexture);
-		model = glm::mat4();
+		model1 = glm::mat4();
 		shaderFloor.SetMat4("model", model1);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 
