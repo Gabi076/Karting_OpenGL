@@ -25,7 +25,7 @@
 
 #pragma comment (lib, "LibrariesDir/lib-vc2019/glfw3dll.lib")
 #pragma comment (lib, "LibrariesDir/Win32/glew32.lib")
-#pragma comment (lib, "LibrariesDir/lib/x64/assimp-vc143-mt.lib")
+#pragma comment (lib, "LibrariesDir/lib/assimp.lib")
 #pragma comment (lib, "OpenGL32.lib")
 const unsigned int SCR_WIDTH = 1000;
 const unsigned int SCR_HEIGHT = 800;

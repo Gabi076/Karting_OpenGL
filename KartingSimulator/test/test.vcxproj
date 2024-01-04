@@ -71,9 +71,9 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>..\IncludeDir\GLFW;..\IncludeDir\glm;..\IncludeDir\include;IncludeDir\stb-master;..\IncludeDir\assimp_include\assimp;$(IncludePath)</IncludePath>
-    <LibraryPath>..\LibrariesDir\lib-vc2019;..\LibrariesDir\Win32;..\LibrariesDir\lib\x64;$(LibraryPath)</LibraryPath>
-    <ExternalIncludePath>IncludeDir\assimp_include;C:\Repositories\G3D\Karting_OpenGL\Karting_OpenGL\KartingSimulator\test\IncludeDir\glm;$(ExternalIncludePath)</ExternalIncludePath>
+    <IncludePath>..\IncludeDir\GLFW;..\IncludeDir\include;IncludeDir\stb-master;$(IncludePath)</IncludePath>
+    <LibraryPath>LibrariesDir\lib-vc2019;LibrariesDir\Win32;LibrariesDir\lib;$(LibraryPath)</LibraryPath>
+    <ExternalIncludePath>IncludeDir\assimp_include;IncludeDir\glm;$(ExternalIncludePath)</ExternalIncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IncludePath>..\IncludeDir\GLFW;..\IncludeDir\glm;..\IncludeDir\include;..\IncludeDir\stb-master;$(IncludePath)</IncludePath>
