@@ -16,7 +16,6 @@
 #include <sstream>
 #include "Camera.h"
 #include "Shader.h"
-#define STB_IMAGE_IMPLEMENTATION 
 #include"IncludeDir/stb-master/stb_image.h"
 
 #include <assimp/Importer.hpp>
