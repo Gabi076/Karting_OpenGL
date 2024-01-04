@@ -1,4 +1,4 @@
-#include <stdlib.h>
+﻿#include <stdlib.h>
 #include <stdio.h>
 #include <math.h> 
 
@@ -117,6 +117,37 @@ void renderFloor()
 
     glBindVertexArray(planeVAO);
     glDrawArrays(GL_TRIANGLES, 0, 6);
+}
+unsigned int loadCubemap(vector<std::string> faces)
+{
+	unsigned int textureID;
+	glGenTextures(1, &textureID);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
+
+	int width, height, nrChannels;
+	for (unsigned int i = 0; i < faces.size(); i++)
+	{
+		unsigned char* data = stbi_load(faces[i].c_str(), &width, &height, &nrChannels, 0);
+		if (data)
+		{
+			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
+				0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data
+			);
+			stbi_image_free(data);
+		}
+		else
+		{
+			std::cout << "Cubemap tex failed to load at path: " << faces[i] << std::endl;
+			stbi_image_free(data);
+		}
+	}
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+	return textureID;
 }
 
 /*void processNode(aiNode* node, const aiScene* scene) {
@@ -335,14 +366,83 @@ int main(int argc, char** argv)
 		5.0f, -0.5f, -5.0f,  1.0f, 1.0f
 	};
 
-	// position attribute
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
-	// normal attribute
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
-	glEnableVertexAttribArray(1);
+	Shader skyboxShader("skybox.vs", "skybox.fs");
+	float skyboxVertices[] = {
+		// positions          
+		-1.0f,  1.0f, -1.0f,
+		-1.0f, -1.0f, -1.0f,
+		 1.0f, -1.0f, -1.0f,
+		 1.0f, -1.0f, -1.0f,
+		 1.0f,  1.0f, -1.0f,
+		-1.0f,  1.0f, -1.0f,
 
-	// second, configure the light's VAO (VBO stays the same; the vertices are the same for the light object which is also a 3D cube)
+		-1.0f, -1.0f,  1.0f,
+		-1.0f, -1.0f, -1.0f,
+		-1.0f,  1.0f, -1.0f,
+		-1.0f,  1.0f, -1.0f,
+		-1.0f,  1.0f,  1.0f,
+		-1.0f, -1.0f,  1.0f,
+
+		 1.0f, -1.0f, -1.0f,
+		 1.0f, -1.0f,  1.0f,
+		 1.0f,  1.0f,  1.0f,
+		 1.0f,  1.0f,  1.0f,
+		 1.0f,  1.0f, -1.0f,
+		 1.0f, -1.0f, -1.0f,
+
+		-1.0f, -1.0f,  1.0f,
+		-1.0f,  1.0f,  1.0f,
+		 1.0f,  1.0f,  1.0f,
+		 1.0f,  1.0f,  1.0f,
+		 1.0f, -1.0f,  1.0f,
+		-1.0f, -1.0f,  1.0f,
+
+		-1.0f,  1.0f, -1.0f,
+		 1.0f,  1.0f, -1.0f,
+		 1.0f,  1.0f,  1.0f,
+		 1.0f,  1.0f,  1.0f,
+		-1.0f,  1.0f,  1.0f,
+		-1.0f,  1.0f, -1.0f,
+
+		-1.0f, -1.0f, -1.0f,
+		-1.0f, -1.0f,  1.0f,
+		 1.0f, -1.0f, -1.0f,
+		 1.0f, -1.0f, -1.0f,
+		-1.0f, -1.0f,  1.0f,
+		 1.0f, -1.0f,  1.0f
+	};
+	for (int i = 0; i < 108; i++)
+		skyboxVertices[i] *= 15;
+	unsigned int skyboxVAO, skyboxVBO;
+	glGenVertexArrays(1, &skyboxVAO);
+	glGenBuffers(1, &skyboxVBO);
+	glBindVertexArray(skyboxVAO);
+	glBindBuffer(GL_ARRAY_BUFFER, skyboxVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), &skyboxVertices, GL_STATIC_DRAW);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+	std::vector<std::string> facesCubemap =
+	{
+		strExePath + "\\..\\test\\skybox\\right.jpg",
+		strExePath + "\\..\\test\\skybox\\left.jpg",
+		strExePath + "\\..\\test\\skybox\\top.jpg",
+		strExePath + "\\..\\test\\skybox\\bottom.jpg",
+		strExePath + "\\..\\test\\skybox\\front.jpg",
+		strExePath + "\\..\\test\\skybox\\back.jpg",
+
+	};
+	unsigned int cubemapTexture = loadCubemap(facesCubemap);
+	skyboxShader.Use();
+	skyboxShader.SetInt("skybox", 0);
+	 //position attribute
+	//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+	//glEnableVertexAttribArray(0);
+	//// normal attribute
+	//glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+	//glEnableVertexAttribArray(1);
+
+	 //second, configure the light's VAO (VBO stays the same; the vertices are the same for the light object which is also a 3D cube)
 	unsigned int lightVBO,lightVAO;
 	glGenVertexArrays(1, &lightVAO);
 	glGenBuffers(1, &lightVBO);
@@ -360,7 +460,7 @@ int main(int argc, char** argv)
 	glEnableVertexAttribArray(1);
 
 	
-	// note that we update the lamp's position attribute's stride to reflect the updated buffer data
+	 //note that we update the lamp's position attribute's stride to reflect the updated buffer data
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 
@@ -390,6 +490,7 @@ int main(int argc, char** argv)
 	Shader shaderBlending("Blending.vs", "Blending.fs");
 	std::string kartObjFileName = (strExePath + "\\..\\test\\Models\\Kart\\Kart.obj");
 	Model kartObjModel(kartObjFileName, false);
+	
 	// render loop
 	while (!glfwWindowShouldClose(window)) {
 		// per-frame time logic
@@ -400,6 +501,7 @@ int main(int argc, char** argv)
 		processInput(window);
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		
 		lightingShader.Use();
 		lightingShader.SetVec3("objectColor", 0.5f, 1.0f, 0.31f);
 		lightingShader.SetVec3("lightColor", 1.0f, 1.0f, 1.0f);
@@ -411,7 +513,7 @@ int main(int argc, char** argv)
 
 		// render the model
 		//glm::mat4 model = glm::scale(glm::mat4(1.0), glm::vec3(0.001f));
-		//lightingShader.setMat4("model", model);
+		//lightingShader.SetMat4("model", model);
 		//objModel.Draw(lightingShader);
 
 		kartModel = glm::scale(glm::mat4(1.0), glm::vec3(0.00046f));
@@ -427,9 +529,10 @@ int main(int argc, char** argv)
 		lightModel = glm::scale(lightModel, glm::vec3(0.05f)); // a smaller cube
 		lampShader.SetMat4("model", lightModel);
 
-		glBindVertexArray(lightVAO);
-		glDrawArrays(GL_TRIANGLES, 0, 36);
+		//glBindVertexArray(lightVAO);
+		//glDrawArrays(GL_TRIANGLES, 0, 36);
 
+		// set depth function back to default
 		glm::mat4 model1 = glm::mat4(1.0);
 
 		shaderFloor.Use();
@@ -445,6 +548,22 @@ int main(int argc, char** argv)
 		shaderFloor.SetMat4("model", model1);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 
+		{
+			glDepthFunc(GL_LEQUAL);  // change depth function so depth test passes when values are equal to depth buffer's content
+			skyboxShader.Use();
+			glm::mat4 view = glm::mat4(glm::mat3(pCamera->GetViewMatrix())); // remove translation from the view matrix
+			skyboxShader.SetMat4("view", view);
+			skyboxShader.SetMat4("projection", pCamera->GetProjectionMatrix());
+			// skybox cube
+			glBindVertexArray(skyboxVAO);
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
+			glDrawArrays(GL_TRIANGLES, 0, 36);
+			glBindVertexArray(0);
+			glDepthFunc(GL_LESS);
+		}
+		
+
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
 		glfwSwapBuffers(window);
 		glfwPollEvents();
@@ -453,9 +572,9 @@ int main(int argc, char** argv)
 	Cleanup();
 
 	//glDeleteVertexArrays(1, &cubeVAO);
-	glDeleteVertexArrays(1, &lightVAO);
+	glDeleteVertexArrays(1, &skyboxVAO);
 	//glDeleteBuffers(1, &cubeVBO);
-	glDeleteBuffers(1, &lightVBO);
+	glDeleteBuffers(1, &skyboxVBO);
 
 	// glfw: terminate, clearing all previously allocated GLFW resources
 	glfwTerminate();
