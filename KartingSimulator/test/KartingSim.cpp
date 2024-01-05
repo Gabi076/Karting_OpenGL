@@ -424,12 +424,12 @@ int main(int argc, char** argv)
 	glEnableVertexAttribArray(0);
 	std::vector<std::string> facesCubemap =
 	{
-		strExePath + "\\..\\test\\right.png",
-		strExePath + "\\..\\test\\left.png",
-		strExePath + "\\..\\test\\top.png",
-		strExePath + "\\..\\test\\bottom.png",
-		strExePath + "\\..\\test\\front.png",
-		strExePath + "\\..\\test\\back.png",
+		strExePath + "\\..\\test\\skybox\\right.jpg",
+		strExePath + "\\..\\test\\skybox\\left.jpg",
+		strExePath + "\\..\\test\\skybox\\top.jpg",
+		strExePath + "\\..\\test\\skybox\\bottom.jpg",
+		strExePath + "\\..\\test\\skybox\\front.jpg",
+		strExePath + "\\..\\test\\skybox\\back.jpg",
 
 	};
 	unsigned int cubemapTexture = loadCubemap(facesCubemap);
