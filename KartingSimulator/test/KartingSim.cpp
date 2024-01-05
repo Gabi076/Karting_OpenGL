@@ -46,7 +46,6 @@ float z = -1450.0f;
 glm::vec3 kartPos = glm::vec3 (x,y,z);
 float deltaX= 0.0f, deltaZ=0.0f;
 glm::mat4 kartModel;
-
 unsigned int CreateTexture(const std::string& strTexturePath)
 {
     unsigned int textureId = -1;
@@ -192,10 +191,10 @@ void processInput(GLFWwindow* window)
 		kartPos.x += deltaX;
 		kartPos.z += deltaZ;
 		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-			accumulatedRotation -= 1.3f;
+			accumulatedRotation -= 1.f;
 		}
 		else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-			accumulatedRotation += 1.3f;
+			accumulatedRotation += 1.f;
 		}
 		
 	}
@@ -204,10 +203,10 @@ void processInput(GLFWwindow* window)
 		kartPos.x -= deltaX;
 		kartPos.z -= deltaZ;
 		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-			accumulatedRotation += 1.3f;
+			accumulatedRotation += 1.f;
 		}
 		else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-			accumulatedRotation -= 1.3f;
+			accumulatedRotation -= 1.f;
 		}
 	}
     if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS) {
@@ -215,7 +214,7 @@ void processInput(GLFWwindow* window)
         glfwGetWindowSize(window, &width, &height);
         pCamera->Reset(width, height);
     }
-	
+
 }
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
@@ -393,17 +392,28 @@ int main(int argc, char** argv)
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
-	std::vector<std::string> facesCubemap =
+
+	std::vector<std::string> facesCubemapDay =
 	{
-		strExePath + "\\..\\test\\skybox\\right.jpg",
-		strExePath + "\\..\\test\\skybox\\left.jpg",
-		strExePath + "\\..\\test\\skybox\\top.jpg",
-		strExePath + "\\..\\test\\skybox\\bottom.jpg",
-		strExePath + "\\..\\test\\skybox\\front.jpg",
-		strExePath + "\\..\\test\\skybox\\back.jpg",
+		strExePath + "\\..\\test\\day\\right.jpg",
+		strExePath + "\\..\\test\\day\\left.jpg",
+		strExePath + "\\..\\test\\day\\bottom.jpg",
+		strExePath + "\\..\\test\\day\\top.jpg",
+		strExePath + "\\..\\test\\day\\front.jpg",
+		strExePath + "\\..\\test\\day\\back.jpg",
 
 	};
-	unsigned int cubemapTexture = loadCubemap(facesCubemap);
+	std::vector<std::string> facesCubemapNight =
+	{
+		strExePath + "\\..\\test\\night\\right.jpg",
+		strExePath + "\\..\\test\\night\\left.jpg",
+		strExePath + "\\..\\test\\night\\top.jpg",
+		strExePath + "\\..\\test\\night\\bottom.jpg",
+		strExePath + "\\..\\test\\night\\front.jpg",
+		strExePath + "\\..\\test\\night\\back.jpg",
+
+	};
+	unsigned int cubemapTexture = loadCubemap(facesCubemapNight);
 	skyboxShader.Use();
 	skyboxShader.SetInt("skybox", 0);
 	 //position attribute
@@ -526,11 +536,17 @@ int main(int argc, char** argv)
 		model1 = glm::mat4();
 		shaderFloor.SetMat4("model", model1);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
-
+		if (glfwGetKey(window, GLFW_KEY_M) == GLFW_PRESS) {
+			cubemapTexture = loadCubemap(facesCubemapDay);
+		}
+		if (glfwGetKey(window, GLFW_KEY_N) == GLFW_PRESS) {
+			cubemapTexture = loadCubemap(facesCubemapNight);
+		}
 		{
 			glDepthFunc(GL_LEQUAL);  // change depth function so depth test passes when values are equal to depth buffer's content
 			skyboxShader.Use();
 			glm::mat4 view = glm::mat4(glm::mat3(pCamera->GetViewMatrix())); // remove translation from the view matrix
+			view = glm::scale(view, glm::vec3(-1.0f, -1.0f, 1.0f));
 			skyboxShader.SetMat4("view", view);
 			skyboxShader.SetMat4("projection", pCamera->GetProjectionMatrix());
 			// skybox cube
@@ -541,7 +557,7 @@ int main(int argc, char** argv)
 			glBindVertexArray(0);
 			glDepthFunc(GL_LESS);
 		}
-		
+
 
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
 		glfwSwapBuffers(window);
