@@ -163,8 +163,6 @@
     <None Include="Lamp.vs" />
     <None Include="PhongLight.fs" />
     <None Include="PhongLight.vs" />
-    <None Include="skybox.fs" />
-    <None Include="skybox.vs" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
