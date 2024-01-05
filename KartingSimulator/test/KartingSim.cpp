@@ -171,7 +171,7 @@ void processInput(GLFWwindow* window)
 {
 	glm::mat4 rotationMatrix;
 	deltaX = 2000.0f * (float)cos(glm::radians(accumulatedRotation)) * (float)deltaTime;
-	deltaZ = 3000.0f * (float)sin(glm::radians(accumulatedRotation)) * (float)deltaTime;
+	deltaZ = 2000.0f * (float)sin(glm::radians(accumulatedRotation)) * (float)deltaTime;
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
 
