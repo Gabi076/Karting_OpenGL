@@ -1,15 +1,15 @@
 #include "Camera.h"
 
-Camera::Camera(const int width, const int height, const glm::vec3& position)
+Camera::Camera(const int width, const int height, const glm::vec3& position, const float angle)
 {
     startPosition = position;
-    Set(width, height, position);
+    Set(width, height, position,angle);
 }
 
-void Camera::Set(const int width, const int height, const glm::vec3& position)
+void Camera::Set(const int width, const int height, const glm::vec3& position, const float angle)
 {
     this->isPerspective = true;
-    this->yaw = YAW;
+    this->yaw = angle;
     this->pitch = PITCH;
 
     this->FoVy = FOV;
@@ -31,7 +31,7 @@ void Camera::Set(const int width, const int height, const glm::vec3& position)
 
 void Camera::Reset(const int width, const int height)
 {
-    Set(width, height, startPosition);
+    Set(width, height, startPosition,0.0f);
 }
 
 void Camera::Reshape(int windowWidth, int windowHeight)
@@ -65,6 +65,22 @@ const glm::mat4 Camera::GetProjectionMatrix() const
             -height / scaleFactor, height / scaleFactor, -zFar, zFar);
     }
     return Proj;
+}
+
+void Camera::SetMatrix(const glm::mat4& viewMatrix)
+{ 
+    // Extract the camera position, forward, and up vectors from the view matrix
+    position = glm::vec3(viewMatrix[3]);
+    forward = glm::normalize(glm::vec3(viewMatrix[2]));  // Assuming the forward vector is in the third column
+    right = glm::normalize(glm::vec3(viewMatrix[0]));    // Assuming the right vector is in the first column
+    up = glm::normalize(glm::vec3(viewMatrix[1]));       // Assuming the up vector is in the second column
+
+    // Recalculate yaw and pitch from the new forward and up vectors
+    yaw = glm::degrees(atan2(forward.x, forward.z));
+    pitch = glm::degrees(asin(-forward.y));  // Assuming OpenGL conventions for the camera coordinate system
+
+    // Update other camera parameters if needed
+    UpdateCameraVectors();
 }
 
 void Camera::ProcessKeyboard(ECameraMovementType direction, float deltaTime)
@@ -131,6 +147,30 @@ void Camera::ProcessMouseScroll(float yOffset)
         FoVy = 1.0f;
     if (FoVy >= 90.0f)
         FoVy = 90.0f;
+}
+
+const glm::vec3 Camera::GetForward() const
+{
+    return forward;
+}
+
+void Camera::RotateCameraHorizontal(float kartZChange)
+{
+    float xChange = 0.0f;
+
+    // Adjust these values based on your preference
+    const float kartRotationSensitivity = 1.f;
+
+    // Calculate the horizontal rotation based on kart's z-coordinate changes
+    xChange = kartZChange * kartRotationSensitivity;
+
+    if (fabs(xChange) <= 1e-6) {
+        return;
+    }
+
+    xChange *= 1.f;
+
+    ProcessMouseMovement(xChange, 0.0f);
 }
 
 void Camera::ProcessMouseMovement(float xOffset, float yOffset, bool constrainPitch)

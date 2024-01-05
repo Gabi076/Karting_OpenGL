@@ -20,21 +20,25 @@ class Camera
 private:
     const float zNEAR = 0.1f;
     const float zFAR = 500.f;
-    const float YAW = -90.0f;
+    const float YAW = 0.0f;
     const float PITCH = 0.0f;
     const float FOV = 45.0f;
     glm::vec3 startPosition;
 public:
-    Camera(const int width, const int height, const glm::vec3& position);
-    void Set(const int width, const int height, const glm::vec3& position);
+    Camera(const int width, const int height, const glm::vec3& position, const float angle);
+    void Set(const int width, const int height, const glm::vec3& position, const float angle);
     void Reset(const int width, const int height);
     void Reshape(int windowWidth, int windowHeight);
     const glm::vec3 GetPosition() const;
     const glm::mat4 GetViewMatrix() const;
     const glm::mat4 GetProjectionMatrix() const;
+    void SetMatrix(const glm::mat4& viewMatrix);
     void ProcessKeyboard(ECameraMovementType direction, float deltaTime);
     void MouseControl(float xPos, float yPos);
     void ProcessMouseScroll(float yOffset);
+    const glm::vec3 GetForward() const;
+    void RotateCameraHorizontal(float kartZChange);
+    
 private:
     void ProcessMouseMovement(float xOffset, float yOffset, bool constrainPitch = true);
     void UpdateCameraVectors();

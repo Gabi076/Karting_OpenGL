@@ -124,55 +124,6 @@ unsigned int loadCubemap(vector<std::string> faces)
 	glGenTextures(1, &textureID);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
 
-	int width, height, nrChannels;
-	for (unsigned int i = 0; i < faces.size(); i++)
-	{
-		unsigned char* data = stbi_load(faces[i].c_str(), &width, &height, &nrChannels, 0);
-		if (data)
-		{
-			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
-				0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data
-			);
-			stbi_image_free(data);
-		}
-		else
-		{
-			std::cout << "Cubemap tex failed to load at path: " << faces[i] << std::endl;
-			stbi_image_free(data);
-		}
-	}
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-
-	return textureID;
-}
-
-/*void processNode(aiNode* node, const aiScene* scene) {
-    // Process node meshes, materials, etc.
-    // Recursively process child nodes
-    for (unsigned int i = 0; i < node->mNumChildren; ++i) {
-        processNode(node->mChildren[i], scene);
-    }
-}
-
-void loadModel(const std::string& filePath) {
-    Assimp::Importer importer;
-    const aiScene* scene = importer.ReadFile(filePath, aiProcess_Triangulate | aiProcess_FlipUVs);
-
-    if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
-        // Handle error
-        std::cerr << "Error loading model: " << importer.GetErrorString() << std::endl;
-        return;
-    }
-
-    // Process the imported model data
-    processNode(scene->mRootNode, scene);
-}*/
-
-
 void renderScene(const Shader& shader)
 {
     // floor
@@ -213,29 +164,24 @@ void processInput(GLFWwindow* window)
 
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
 		kartPos.x += deltaX;
-		kartPos.z -= deltaZ;
+		kartPos.z += deltaZ;
 		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-			accumulatedRotation += 1;
-			//kartModel *= rotationMatrix;
+			accumulatedRotation -= 1.3f;
 		}
 		else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-			accumulatedRotation -= 1;
-			//kartModel *= rotationMatrix;
+			accumulatedRotation += 1.3f;
 		}
 		
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
 		kartPos.x -= deltaX;
-		kartPos.z += deltaZ;
+		kartPos.z -= deltaZ;
 		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-			accumulatedRotation -= 1.3;
-		    kartModel = glm::rotate(glm::mat4(1.0f), glm::radians(5.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-			
+			accumulatedRotation += 1.3f;
 		}
 		else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-			accumulatedRotation += 1.3;
-			kartModel = glm::rotate(glm::mat4(1.0f), glm::radians(5.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+			accumulatedRotation -= 1.3f;
 		}
 	}
     if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS) {
@@ -243,7 +189,6 @@ void processInput(GLFWwindow* window)
         glfwGetWindowSize(window, &width, &height);
         pCamera->Reset(width, height);
     }
-		
 	
 }
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
@@ -299,7 +244,7 @@ int main(int argc, char** argv)
 
 	glfwMakeContextCurrent(window);
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-	glfwSetCursorPosCallback(window, mouse_callback);
+	//glfwSetCursorPosCallback(window, mouse_callback);
 	glfwSetScrollCallback(window, scroll_callback);
 
 	// tell GLFW to capture our mouse
@@ -481,7 +426,7 @@ int main(int argc, char** argv)
 	unsigned int floorTexture = CreateTexture(strExePath + "\\..\\test\\PrejmerTrack.png");
 
 	// Create camera
-	pCamera = new Camera(SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0, 0.0, 0.0));
+	pCamera = new Camera(SCR_WIDTH, SCR_HEIGHT, glm::vec3(kartPos.x+1969.0f,kartPos.y+1085.f, 1449.32f+kartPos.z),0.0f);
 
 	glm::vec3 lightPos(0.0f, 2.0f, 2.0f);
 	Shader lightingShader("PhongLight.vs", "PhongLight.fs");
@@ -510,17 +455,24 @@ int main(int argc, char** argv)
 
 		lightingShader.SetMat4("projection", pCamera->GetProjectionMatrix());
 		lightingShader.SetMat4("view", pCamera->GetViewMatrix());
-
-		// render the model
-		//glm::mat4 model = glm::scale(glm::mat4(1.0), glm::vec3(0.001f));
-		//lightingShader.SetMat4("model", model);
-		//objModel.Draw(lightingShader);
-
 		kartModel = glm::scale(glm::mat4(1.0), glm::vec3(0.00046f));
 		kartModel = glm::translate(kartModel, kartPos) ;
-		kartModel = glm::rotate(kartModel, glm::radians(90.f) + glm::radians(accumulatedRotation), glm::vec3(0.0f, 1.0f, 0.0f));
+		kartModel = glm::rotate(kartModel, glm::radians(90.f) + glm::radians(-accumulatedRotation), glm::vec3(0.0f, 1.0f, 0.0f));
+
+
+		float distanceFromKart = 0.5f;
+		float thetaRad = glm::radians(accumulatedRotation);
+
+		// Calculate the new point's coordinates
+		float xNew = kartPos.x * 0.00046f - distanceFromKart * std::cos(thetaRad);
+		float zNew = kartPos.z * 0.00046f - distanceFromKart * std::sin(thetaRad);
+		glm::vec3 newPosition = glm::vec3(xNew, 0.0f, zNew);
+		pCamera->Set(SCR_WIDTH, SCR_HEIGHT, newPosition,accumulatedRotation );
+		
 		lightingShader.SetMat4("model", kartModel);
 		kartObjModel.Draw(lightingShader);
+
+
 		// also draw the lamp object
 		lampShader.Use();
 		lampShader.SetMat4("projection", pCamera->GetProjectionMatrix());
@@ -540,7 +492,7 @@ int main(int argc, char** argv)
 		glm::mat4 view = pCamera->GetViewMatrix();
 		shaderFloor.SetMat4("projection", projection);
 		shaderFloor.SetMat4("view", view);
-
+	
 		// Draw floor
 		glBindVertexArray(floorVAO);
 		glBindTexture(GL_TEXTURE_2D, floorTexture);
